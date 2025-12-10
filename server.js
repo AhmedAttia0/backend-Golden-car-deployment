@@ -20,7 +20,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/cars", carRotuer);
 app.use("/settings", settingsRouter);
 app.use("/booking", bookingRouter);
-app.get("db", async (req,res) => {
+app.get("/db", async (req,res) => {
   res.send({message : uri})
 })
 
