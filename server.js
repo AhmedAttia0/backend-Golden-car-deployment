@@ -4,8 +4,7 @@ import carRotuer from "./src/routes/cars.mjs";
 import settingsRouter from "./src/routes/settings.mjs";
 import bookingRouter from "./src/routes/booking.mjs";
 import path from "path";
-import dotenv from "dotenv";
-dotenv.config();
+
 
 const uri = process.env.MONGO_URI;
 const port = process.env.PORT || 5000;
