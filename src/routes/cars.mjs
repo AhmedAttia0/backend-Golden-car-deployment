@@ -1,7 +1,8 @@
 import { Router } from "express";
 import Car from "../models/Car.mjs";
 import validateCar from "../validations/carValidation.mjs";
-import { upload } from "../middleware/uploadImages.js";
+import { upload } from "../middleware/uploadImages.mjs";
+import { uploadToCloudinary } from "../utilts/uploadToCloudinary.mjs";
 const router = Router();
 
 router.get("/", async (req, res) => {
@@ -73,29 +74,26 @@ router.post("/", upload.array("carImages", 4), async (req, res) => {
   try {
     const files = req.files;
 
-    if (!files || files.length < 1 || files.length > 4) {
-      return res
-        .status(400)
-        .send({ message: "يجب رفع على الأقل صورة واحدة وبحد أقصى 4 صور" });
+    if (!files || files.length === 0) {
+      return res.status(400).send({ message: "يجب رفع صورة واحدة على الأقل" });
     }
 
-    const host = req.protocol + "://" + req.get("host"); // http://localhost:5000
-    const imageUrls = files.map(
-      (file) => `${host}/uploads/cars/${file.filename}`
-    );
+    const imageUrls = [];
+    for (let file of files) {
+      const url = await uploadToCloudinary(file.buffer, "cars");
+      imageUrls.push(url);
+    }
 
     const carData = {
       ...req.body,
       images: imageUrls,
     };
 
-    await validateCar.validateAsync(carData, { abortEarly: false });
-
     const car = await Car.create(carData);
 
     res.status(201).send({ message: "تم اضافة السيارة بنجاح", car });
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
