@@ -7,6 +7,7 @@ import settingsRouter from "./src/routes/settings.mjs";
 import bookingRouter from "./src/routes/booking.mjs";
 import path from "path";
 import "./src/config/cloudinary.js";
+import cors from "cors";
 
 
 const uri = process.env.MONGO_URI;
@@ -31,5 +32,11 @@ app.use("/booking", bookingRouter);
 app.get("/db", async (req, res) => {
   res.send({ message: uri });
 });
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.listen(port, () => console.log("Server listening on port ", port));
